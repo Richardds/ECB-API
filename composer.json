@@ -1,0 +1,19 @@
+{
+  "name": "richardds/ecb-api",
+  "description": "European Central Bank EURO exchange PHP API",
+  "minimum-stability": "stable",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Richard Boldiš",
+      "email": "richard.boldis@richardds.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Richardds\\ECBAPI\\": "src/"
+    }
+  },
+  "require": {
+  }
+}
