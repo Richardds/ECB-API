@@ -21,12 +21,14 @@ class ECBConverter
      *
      * @param string|string[] $currency_code
      * @param integer $amount
+     * @param boolean|null $round
      * @return integer|integer[]
      */
-    public static function toEuro($amount, $currency_code)
+    public static function toEuro($amount, $currency_code, $round = null)
     {
-        return self::convert($amount, $currency_code, function ($amount, $rate) {
-            return $amount / $rate;
+        return self::convert($amount, $currency_code, function ($amount, $rate) use ($round) {
+            $val = $amount / $rate;
+            return !is_null($round) ? round($val, $round) : $val;
         });
     }
 
@@ -82,12 +84,14 @@ class ECBConverter
      *
      * @param string|string[] $currency_code
      * @param integer $amount
+     * @param boolean|null $round
      * @return integer|integer[]
      */
-    public static function toForeign($amount, $currency_code)
+    public static function toForeign($amount, $currency_code, $round = null)
     {
-        return self::convert($amount, $currency_code, function ($amount, $rate) {
-            return $amount * $rate;
+        return self::convert($amount, $currency_code, function ($amount, $rate) use ($round) {
+            $val = $amount * $rate;
+            return !is_null($round) ? round($val, $round) : $val;
         });
     }
 }

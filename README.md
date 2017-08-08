@@ -8,12 +8,21 @@ require __DIR__ . '/vendor/autoload.php';
 
 use Richardds\ECBAPI\ECBConverter;
 
-echo ECBConverter::toEuro(150, 'USD') . PHP_EOL;
+echo ECBConverter::toEuro(150, 'USD', 3) . PHP_EOL;
 echo ECBConverter::toForeign(150, 'USD') . PHP_EOL;
+print_r(ECBConverter::toForeign(150, ['EUR', 'USD', 'CHF', 'RUB', 'CZK'])) . PHP_EOL;
 ```
 ```text
-126.96800406298
+126.968
 177.21
+Array
+(
+    [EUR] => 150
+    [USD] => 126.96800406298
+    [CHF] => 130.68478829064
+    [RUB] => 2.1159184778929
+    [CZK] => 5.736137667304
+)
 ```
 
 ##### Exchange rate list
