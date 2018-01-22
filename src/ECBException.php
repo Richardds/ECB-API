@@ -16,6 +16,7 @@ class ECBException extends Exception
 
     /**
      * ECBException constructor.
+     *
      * @param string $message
      * @param int $code
      * @param Throwable|null $previous

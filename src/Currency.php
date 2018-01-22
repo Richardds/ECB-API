@@ -45,14 +45,15 @@ class Currency
     private $code;
 
     /**
-     * @var integer
+     * @var int
      */
     private $rate;
 
     /**
      * Currency constructor.
+     *
      * @param string $code
-     * @param integer $rate
+     * @param int $rate
      */
     public function __construct(string $code, $rate)
     {
