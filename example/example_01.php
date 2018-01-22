@@ -4,7 +4,7 @@ require __DIR__ . '/../vendor/autoload.php';
 
 use Richardds\ECBAPI\ECBConverter;
 
-$converter = new ECBConverter('.ecb_cache');
+$converter = new ECBConverter();
 
 try {
     $a = $converter->toEuro(150, 'USD', 1);

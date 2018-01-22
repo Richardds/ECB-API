@@ -8,9 +8,11 @@ require __DIR__ . '/vendor/autoload.php';
 
 use Richardds\ECBAPI\ECBConverter;
 
-echo ECBConverter::toEuro(150, 'USD', 3) . PHP_EOL;
-echo ECBConverter::toForeign(150, 'USD') . PHP_EOL;
-print_r(ECBConverter::toForeign(150, ['EUR', 'USD', 'CHF', 'RUB', 'CZK'])) . PHP_EOL;
+$converter = new ECBConverter();
+
+echo $converter->toEuro(150, 'USD', 3);
+echo $converter->toForeign(150, 'USD');
+print_r($converter->toForeign(150, ['EUR', 'USD', 'CHF', 'RUB', 'CZK'])) . PHP_EOL;
 ```
 ```text
 126.968
