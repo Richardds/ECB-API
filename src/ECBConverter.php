@@ -64,13 +64,9 @@ class ECBConverter
     }
 
     /**
-     * @param int $amount
-     * @param string|array $currency_code
-     * @param callable $callback
-     * @return int|array
      * @throws ECBException
      */
-    private function convert(int $amount, $currency_code, callable $callback)
+    private function check()
     {
         if (!empty($this->cache_file)) {
             $this->checkFileCache();
@@ -79,6 +75,42 @@ class ECBConverter
                 $this->reloadExchangeReferences();
             }
         }
+    }
+
+    /**
+     * @param bool $asArray
+     * @return Currency[]|array
+     * @throws ECBException
+     */
+    public function list(bool $asArray = false): array
+    {
+        $this->check();
+
+        $references = $this->exchange_data;
+
+        if ($asArray) {
+            $array = [];
+
+            foreach ($references as $reference) {
+                $array[$reference->getCode()] = $reference->getRate();
+            }
+
+            return $array;
+        }
+
+        return $references;
+    }
+
+    /**
+     * @param int $amount
+     * @param string|array $currency_code
+     * @param callable $callback
+     * @return int|array
+     * @throws ECBException
+     */
+    public function convert(int $amount, $currency_code, callable $callback)
+    {
+        $this->check();
 
         if (is_array($currency_code)) {
             $results = [];
