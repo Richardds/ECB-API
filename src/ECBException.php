@@ -6,6 +6,10 @@ use Exception;
 use InvalidArgumentException;
 use Throwable;
 
+/**
+ * Class ECBException
+ * @package Richardds\ECBAPI
+ */
 class ECBException extends Exception
 {
     const UNDEFINED = 0;

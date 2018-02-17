@@ -2,8 +2,15 @@
 
 namespace Richardds\ECBAPI;
 
+/**
+ * Class Currency
+ * @package Richardds\ECBAPI
+ */
 class Currency
 {
+    /**
+     * Available ECB currencies
+     */
     const CURRENCY_NAME_TABLE = [
         'EUR' => '',
         'USD' => '',

@@ -2,6 +2,10 @@
 
 namespace Richardds\ECBAPI;
 
+/**
+ * Class ECBConverter
+ * @package Richardds\ECBAPI
+ */
 class ECBConverter
 {
     /**
@@ -12,12 +16,12 @@ class ECBConverter
     /**
      * @var string
      */
-    private $cache_file = '';
+    private $cache_file;
 
     /**
      * @var int
      */
-    private $cache_timeout = 3;
+    private $cache_timeout;
 
     /**
      * ECBConverter constructor.
@@ -25,7 +29,7 @@ class ECBConverter
      * @param null|string $cache_file
      * @param int $cache_timeout
      */
-    public function __construct(string $cache_file = '.ecb_cache', $cache_timeout = 3600)
+    public function __construct(string $cache_file = '.ecb_cache', int $cache_timeout = 3600)
     {
         $this->cache_file = $cache_file;
         $this->cache_timeout = $cache_timeout;

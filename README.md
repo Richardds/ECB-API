@@ -31,17 +31,18 @@ Array
 ```php
 require __DIR__ . '/vendor/autoload.php';
 
-use Richardds\ECBAPI\ECB;
+use Richardds\ECBAPI\ECBConverter;
 
-foreach (ECB::getExchangeReferences() as $reference) {
-    $foreign_code = $reference->getCode();
-    $rate = $reference->getRate();
+$converter = new ECBConverter();
 
-    if ($foreign_code == 'EUR') {
+$references = $converter->list(true);
+
+foreach ($references as $code => $rate) {
+    if ($code == 'EUR') {
         continue;
     }
 
-    printf("1.00 EUR = %.2f %s\n1.00 %s = %.2f EUR\n", $rate, $foreign_code, $foreign_code, (1 / $rate));
+    printf("1.00 EUR = %.2f %s\n1.00 %s = %.2f EUR\n", $rate, $code, $code, (1 / $rate));
 }
 ```
 ```text

@@ -2,6 +2,10 @@
 
 namespace Richardds\ECBAPI;
 
+/**
+ * Class ECB
+ * @package Richardds\ECBAPI
+ */
 class ECB
 {
     /**
