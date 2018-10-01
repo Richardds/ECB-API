@@ -13,7 +13,7 @@ class ECB
      *
      * @var string
      */
-    const EXCHANGE_REFERENCE_URL = 'http://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml';
+    const EXCHANGE_REFERENCE_URL = 'https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml';
 
     /**
      * @return Currency[]
