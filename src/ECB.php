@@ -73,8 +73,9 @@ class ECB
             return $data;
         }
 
+        $curl_error = curl_error($ch);
         curl_close($ch);
 
-        throw new ECBException(curl_error($ch), ECBException::DATA_DOWNLOAD_FAILED);
+        throw new ECBException($curl_error, ECBException::DATA_DOWNLOAD_FAILED);
     }
 }
