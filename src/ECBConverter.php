@@ -40,13 +40,11 @@ class ECBConverter
      */
     public function checkFileCache(): void
     {
-        if (!file_exists($this->cache_file) ||  time() - filemtime($this->cache_file) > $this->cache_timeout) {
+        if (!file_exists($this->cache_file) || time() - filemtime($this->cache_file) > $this->cache_timeout) {
             $this->reloadExchangeReferences();
             file_put_contents($this->cache_file, serialize($this->exchange_data), LOCK_EX);
-        } else {
-            if (is_null($this->exchange_data)) {
-                $this->exchange_data = unserialize(file_get_contents($this->cache_file));
-            }
+        } elseif (is_null($this->exchange_data)) {
+            $this->exchange_data = unserialize(file_get_contents($this->cache_file));
         }
     }
 
@@ -70,14 +68,12 @@ class ECBConverter
     /**
      * @throws ECBException
      */
-    private function check()
+    private function check(): void
     {
         if (!empty($this->cache_file)) {
             $this->checkFileCache();
-        } else {
-            if (is_null($this->exchange_data)) {
-                $this->reloadExchangeReferences();
-            }
+        } elseif (is_null($this->exchange_data)) {
+            $this->reloadExchangeReferences();
         }
     }
 
@@ -124,19 +120,19 @@ class ECBConverter
             }
 
             return $results;
-        } else {
-            if ($currency_code == '*') {
-                $results = [];
-
-                foreach ($this->exchange_data as $currency) {
-                    $results[$currency->getCode()] = $callback($amount, $currency->getRate());
-                }
-
-                return $results;
-            } else {
-                return $callback($amount, $this->exchange_data[$currency_code]->getRate());
-            }
         }
+
+        if ($currency_code === '*') {
+            $results = [];
+
+            foreach ($this->exchange_data as $currency) {
+                $results[$currency->getCode()] = $callback($amount, $currency->getRate());
+            }
+
+            return $results;
+        }
+
+        return $callback($amount, $this->exchange_data[$currency_code]->getRate());
     }
 
     /**
@@ -171,33 +167,21 @@ class ECBConverter
         });
     }
 
-    /**
-     * @return string
-     */
     public function getCacheFile(): string
     {
         return $this->cache_file;
     }
 
-    /**
-     * @param string $cache_file
-     */
     public function setCacheFile(string $cache_file): void
     {
         $this->cache_file = $cache_file;
     }
 
-    /**
-     * @return int
-     */
     public function getCacheTimeout(): int
     {
         return $this->cache_timeout;
     }
 
-    /**
-     * @param int $cache_timeout
-     */
     public function setCacheTimeout(int $cache_timeout): void
     {
         $this->cache_timeout = $cache_timeout;

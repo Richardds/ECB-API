@@ -1,8 +1,15 @@
 # ECB-API
 European Central Bank EURO exchange PHP API
 
+## Installation with Composer
+```bash
+composer require richardds/ecb-api
+```
+
 ## Examples
-##### EURO to FOREIGN, FOREIGN to EURO
+
+### EURO to FOREIGN, FOREIGN to EURO
+
 ```php
 require __DIR__ . '/vendor/autoload.php';
 
@@ -27,7 +34,8 @@ Array
 )
 ```
 
-##### Exchange rate list
+### Exchange rate list
+
 ```php
 require __DIR__ . '/vendor/autoload.php';
 
@@ -38,7 +46,7 @@ $converter = new ECBConverter();
 $references = $converter->list(true);
 
 foreach ($references as $code => $rate) {
-    if ($code == 'EUR') {
+    if ($code === 'EUR') {
         continue;
     }
 
@@ -55,9 +63,4 @@ foreach ($references as $code => $rate) {
 1.00 EUR = 26.15 CZK
 1.00 CZK = 0.04 EUR
 ...
-```
-
-## Composer
-```bash
-composer require richardds/ecb-api
 ```
