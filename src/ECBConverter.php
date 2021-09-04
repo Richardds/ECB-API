@@ -43,7 +43,7 @@ class ECBConverter
         if (!file_exists($this->cache_file) || time() - filemtime($this->cache_file) > $this->cache_timeout) {
             $this->reloadExchangeReferences();
             file_put_contents($this->cache_file, serialize($this->exchange_data), LOCK_EX);
-        } else if (is_null($this->exchange_data)) {
+        } elseif (is_null($this->exchange_data)) {
             $this->exchange_data = unserialize(file_get_contents($this->cache_file));
         }
     }
