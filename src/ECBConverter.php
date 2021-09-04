@@ -112,6 +112,7 @@ class ECBConverter
     {
         $this->check();
 
+        // Selected currencies
         if (is_array($currency_code)) {
             $results = [];
 
@@ -121,7 +122,8 @@ class ECBConverter
 
             return $results;
         }
-
+        
+        // All currencies
         if ($currency_code === '*') {
             $results = [];
 
@@ -132,6 +134,7 @@ class ECBConverter
             return $results;
         }
 
+        // Single currency
         return $callback($amount, $this->exchange_data[$currency_code]->getRate());
     }
 
