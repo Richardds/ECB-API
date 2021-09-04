@@ -11,7 +11,7 @@ class Currency
     /**
      * Available ECB currencies
      */
-    const CURRENCY_NAME_TABLE = [
+    public const CURRENCY_NAME_TABLE = [
         'EUR' => '',
         'USD' => '',
         'JPY' => '',
@@ -52,50 +52,32 @@ class Currency
     private $code;
 
     /**
-     * @var int
+     * @var float
      */
     private $rate;
 
-    /**
-     * Currency constructor.
-     *
-     * @param string $code
-     * @param int $rate
-     */
-    public function __construct(string $code, $rate)
+    public function __construct(string $code, float $rate)
     {
         $this->code = $code;
         $this->rate = $rate;
     }
 
-    /**
-     * @return string
-     */
     public function getName(): string
     {
         return self::CURRENCY_NAME_TABLE[$this->code] ?? '';
     }
 
-    /**
-     * @return string
-     */
     public function getCode(): string
     {
         return $this->code;
     }
 
-    /**
-     * @return int
-     */
-    public function getRate()
+    public function getRate(): float
     {
         return $this->rate;
     }
 
-    /**
-     * @param int $rate
-     */
-    public function setRate($rate)
+    public function setRate(float $rate): void
     {
         $this->rate = $rate;
     }

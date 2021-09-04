@@ -13,7 +13,7 @@ class ECB
      *
      * @var string
      */
-    const EXCHANGE_REFERENCE_URL = 'https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml';
+    protected const EXCHANGE_REFERENCE_URL = 'https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml';
 
     /**
      * @return Currency[]
@@ -31,14 +31,12 @@ class ECB
                 $code = (string)($row['currency'] ?? '');
                 $rate = (double)($row['rate'] ?? 0);
 
-                if (empty($code) || strlen($code) != 3) {
-                    throw new ECBException('Currency code is invalid',
-                        ECBException::DATA_PARSE_FAILED);
+                if (empty($code) || strlen($code) !== 3) {
+                    throw new ECBException('Currency code is invalid', ECBException::DATA_PARSE_FAILED);
                 }
 
                 if ($rate <= 0) {
-                    throw new ECBException('Currency rate is invalid',
-                        ECBException::DATA_PARSE_FAILED);
+                    throw new ECBException('Currency rate is invalid', ECBException::DATA_PARSE_FAILED);
                 }
 
                 $exchange_references[$code] = new Currency($code, $rate);
@@ -57,7 +55,7 @@ class ECB
      */
     private static function fetch(string $url): string
     {
-        $ch = curl_init($url . '?' . uniqid());
+        $ch = curl_init($url . '?' . uniqid('', true));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
         if (($data = @curl_exec($ch)) !== false) {

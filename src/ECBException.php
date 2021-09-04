@@ -12,11 +12,11 @@ use Throwable;
  */
 class ECBException extends Exception
 {
-    const UNDEFINED = 0;
-    const DATA_DOWNLOAD_FAILED = 1;
-    const DATA_PARSE_FAILED = 2;
-    const INVALID_DATA = 3;
-    const CONVERT_FAILED = 4;
+    public const UNDEFINED = 0;
+    public const DATA_DOWNLOAD_FAILED = 1;
+    public const DATA_PARSE_FAILED = 2;
+    public const INVALID_DATA = 3;
+    public const CONVERT_FAILED = 4;
 
     /**
      * ECBException constructor.
@@ -54,9 +54,6 @@ class ECBException extends Exception
         parent::__construct($msg, $code, $previous);
     }
 
-    /**
-     * @return string
-     */
     public function __toString(): string
     {
         return __CLASS__ . ": [{$this->code}]: {$this->message}\n";
