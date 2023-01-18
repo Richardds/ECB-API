@@ -108,7 +108,7 @@ class ECBConverter
      * @return int|array
      * @throws ECBException
      */
-    public function convert(int $amount, $currency_code, callable $callback)
+    public function convert(float $amount, $currency_code, callable $callback)
     {
         $this->check();
 
@@ -122,7 +122,7 @@ class ECBConverter
 
             return $results;
         }
-        
+
         // All currencies
         if ($currency_code === '*') {
             $results = [];
@@ -162,7 +162,7 @@ class ECBConverter
      * @return int|array
      * @throws ECBException
      */
-    public function toForeign(int $amount, string $currency_code, ?int $precision = null)
+    public function toForeign(float $amount, string $currency_code, ?int $precision = null)
     {
         return $this->convert($amount, $currency_code, function ($amount, $rate) use ($precision) {
             $val = $amount * $rate;
