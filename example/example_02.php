@@ -2,9 +2,11 @@
 
 require __DIR__ . '/../vendor/autoload.php';
 
+use Richardds\ECBAPI\ECB;
 use Richardds\ECBAPI\ECBConverter;
 
-$converter = new ECBConverter();
+$ecb = new ECB();
+$converter = new ECBConverter($ecb);
 
 $references = [];
 

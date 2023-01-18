@@ -2,35 +2,22 @@
 
 namespace Richardds\ECBAPI;
 
-/**
- * Class ECBConverter
- * @package Richardds\ECBAPI
- */
 class ECBConverter
 {
-    /**
-     * @var null|Currency[]
-     */
-    private $exchange_data;
+    private ECB $ecb;
+
+    private string $cache_file;
+
+    private int $cache_timeout;
 
     /**
-     * @var string
+     * @var Currency[]
      */
-    private $cache_file;
+    private array $exchange_data = [];
 
-    /**
-     * @var int
-     */
-    private $cache_timeout;
-
-    /**
-     * ECBConverter constructor.
-     *
-     * @param null|string $cache_file
-     * @param int $cache_timeout
-     */
-    public function __construct(string $cache_file = '.ecb_cache', int $cache_timeout = 3600)
+    public function __construct(ECB $ecb, string $cache_file = '.ecb_cache', int $cache_timeout = 3600)
     {
+        $this->ecb = $ecb;
         $this->cache_file = $cache_file;
         $this->cache_timeout = $cache_timeout;
     }
@@ -41,27 +28,28 @@ class ECBConverter
     public function checkFileCache(): void
     {
         if (!file_exists($this->cache_file) || time() - filemtime($this->cache_file) > $this->cache_timeout) {
-            $this->reloadExchangeReferences();
+            $this->reloadExchangeReferences($this->ecb);
             file_put_contents($this->cache_file, serialize($this->exchange_data), LOCK_EX);
-        } elseif (is_null($this->exchange_data)) {
+        } else if (empty($this->exchange_data)) {
             $this->exchange_data = unserialize(file_get_contents($this->cache_file));
         }
     }
 
     /**
-     * Converts foreign currency to euro.
+     * Converts foreign currency to euro
      *
-     * @param int $amount
-     * @param string|array $currency_code
-     * @param int|null $round
-     * @return int|array
      * @throws ECBException
      */
-    public function toEuro(int $amount, $currency_code, ?int $round = null)
+    public function toEuro(float $amount, string $currency, ?int $precision = null)
     {
-        return $this->convert($amount, $currency_code, function ($amount, $rate) use ($round) {
-            $val = $amount / $rate;
-            return !is_null($round) ? round($val, $round) : $val;
+        return $this->convert($amount, $currency, function ($amount, $rate) use ($precision) {
+            $value = $amount / $rate;
+
+            if (!is_null($precision)) {
+                return round($value, $precision);
+            } else {
+                return $value;
+            }
         });
     }
 
@@ -72,13 +60,12 @@ class ECBConverter
     {
         if (!empty($this->cache_file)) {
             $this->checkFileCache();
-        } elseif (is_null($this->exchange_data)) {
-            $this->reloadExchangeReferences();
+        } else if (empty($this->exchange_data)) {
+            $this->reloadExchangeReferences($this->ecb);
         }
     }
 
     /**
-     * @param bool $asArray
      * @return Currency[]|array
      * @throws ECBException
      */
@@ -86,45 +73,41 @@ class ECBConverter
     {
         $this->check();
 
-        $references = $this->exchange_data;
-
         if ($asArray) {
             $array = [];
 
-            foreach ($references as $reference) {
+            foreach ($this->exchange_data as $reference) {
                 $array[$reference->getCode()] = $reference->getRate();
             }
 
             return $array;
+        } else {
+            return $this->exchange_data;
         }
-
-        return $references;
     }
 
     /**
-     * @param int $amount
-     * @param string|array $currency_code
-     * @param callable $callback
-     * @return int|array
+     * @param string[]|string $currencies
+     * @return string[]|string
      * @throws ECBException
      */
-    public function convert(float $amount, $currency_code, callable $callback)
+    public function convert(float $amount, $currencies, callable $callback)
     {
         $this->check();
 
         // Selected currencies
-        if (is_array($currency_code)) {
+        if (is_array($currencies)) {
             $results = [];
 
-            foreach ($currency_code as $currency_c) {
-                $results[$currency_c] = $callback($amount, $this->exchange_data[$currency_c]->getRate());
+            foreach ($currencies as $currency) {
+                $results[$currency] = $callback($amount, $this->exchange_data[$currency]->getRate());
             }
 
             return $results;
         }
 
         // All currencies
-        if ($currency_code === '*') {
+        if ($currencies === '*') {
             $results = [];
 
             foreach ($this->exchange_data as $currency) {
@@ -135,31 +118,22 @@ class ECBConverter
         }
 
         // Single currency
-        return $callback($amount, $this->exchange_data[$currency_code]->getRate());
+        return $callback($amount, $this->exchange_data[$currencies]->getRate());
     }
 
     /**
-     * Reloads ECB exchange references.
+     * Reloads ECB exchange references
      *
      * @throws ECBException
      */
-    public function reloadExchangeReferences(): void
+    public function reloadExchangeReferences(ECB $ecb): void
     {
-        try {
-            $this->exchange_data = ECB::getExchangeReferences();
-        } catch (ECBException $e) {
-            throw new ECBException('Failed to update ESB exchange references',
-                ECBException::CONVERT_FAILED, $e);
-        }
+        $this->exchange_data = $ecb->getExchangeReferences();
     }
 
     /**
-     * Converts euro to foreign currency.
+     * Converts euro to foreign currency
      *
-     * @param int $amount
-     * @param string|array $currency_code
-     * @param int|null $precision
-     * @return int|array
      * @throws ECBException
      */
     public function toForeign(float $amount, string $currency_code, ?int $precision = null)
@@ -168,6 +142,16 @@ class ECBConverter
             $val = $amount * $rate;
             return !is_null($precision) ? round($val, $precision) : $val;
         });
+    }
+
+    public function getECB(): ECB
+    {
+        return $this->ecb;
+    }
+
+    public function setECB(ECB $ecb): void
+    {
+        $this->ecb = $ecb;
     }
 
     public function getCacheFile(): string
