@@ -26,7 +26,6 @@ class Currency
         'CHF' => 'Swiss franc',
         'ISK' => 'Icelandic króna',
         'NOK' => 'Norwegian krone',
-        'HRK' => 'Croatian kuna',
         'TRY' => 'Turkish lira',
         'AUD' => 'Australian dollar',
         'BRL' => 'Brazilian real',
