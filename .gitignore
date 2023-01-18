@@ -1,3 +1,4 @@
-**/.idea
-**/.ecb_cache
-/vendor
+.idea/
+vendor/
+*.cache
+.ecb_cache
