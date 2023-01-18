@@ -22,14 +22,14 @@ class ECB
         if ($data === false) {
             $curl_error = curl_error($handle);
             curl_close($handle);
-            throw new ECBException(ECBException::DATA_DOWNLOAD_FAILED, $curl_error);
+            throw new ECBException(ECBException::DATA_FETCH_FAILED, 'cURL error: ' . $curl_error);
         }
 
         $http_code = curl_getinfo($handle, CURLINFO_HTTP_CODE);
 
         if ($http_code !== 200) {
             curl_close($handle);
-            throw new ECBException(ECBException::DATA_DOWNLOAD_FAILED, 'HTTP_CODE != 200');
+            throw new ECBException(ECBException::DATA_FETCH_FAILED, 'cURL status code != 200');
         }
 
         curl_close($handle);
@@ -47,10 +47,12 @@ class ECB
 
         if (preg_match('/^https?:\/\//', $this->exchange_reference_url) === 1) {
             $raw_xml_data = self::fetch($this->exchange_reference_url);
-        } else if (preg_match('/^file:\/\//', $this->exchange_reference_url) === 1) {
-            $raw_xml_data = file_get_contents($this->exchange_reference_url);
         } else {
-            throw new ECBException(ECBException::INVALID_URL, 'Unsupported URL schema');
+            $raw_xml_data = file_get_contents($this->exchange_reference_url);
+
+            if ($raw_xml_data === false) {
+                throw new ECBException(ECBException::DATA_FETCH_FAILED, 'Failed to get file contents');
+            }
         }
 
         $xml = simplexml_load_string($raw_xml_data);

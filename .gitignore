@@ -1,4 +1,4 @@
 .idea/
 vendor/
-*.cache
-.ecb_cache
+**/.ecb_cache
+**/.phpunit.result.cache
