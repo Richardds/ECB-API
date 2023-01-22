@@ -25,7 +25,7 @@ class ECBConverter
     /**
      * @throws ECBException
      */
-    public function checkFileCache(): void
+    private function checkFileCache(): void
     {
         if (!file_exists($this->cache_file) || time() - filemtime($this->cache_file) > $this->cache_timeout) {
             $this->reloadExchangeReferences($this->ecb);
@@ -36,27 +36,9 @@ class ECBConverter
     }
 
     /**
-     * Converts foreign currency to euro
-     *
      * @throws ECBException
      */
-    public function toEuro(float $amount, string $currency, ?int $precision = null)
-    {
-        return $this->convert($amount, $currency, function ($amount, $rate) use ($precision) {
-            $value = $amount / $rate;
-
-            if (!is_null($precision)) {
-                return round($value, $precision);
-            } else {
-                return $value;
-            }
-        });
-    }
-
-    /**
-     * @throws ECBException
-     */
-    private function check(): void
+    public function check(): void
     {
         if (!empty($this->cache_file)) {
             $this->checkFileCache();
@@ -88,7 +70,7 @@ class ECBConverter
 
     /**
      * @param string[]|string $currencies
-     * @return string[]|string
+     * @return float[]|float
      * @throws ECBException
      */
     public function convert(float $amount, $currencies, callable $callback)
@@ -122,6 +104,39 @@ class ECBConverter
     }
 
     /**
+     * Converts foreign currency to euro
+     * @param string[]|string $currencies
+     * @return float[]|float
+     * @throws ECBException
+     */
+    public function toEuro(float $amount, string $currencies, ?int $precision = null)
+    {
+        return $this->convert($amount, $currencies, function ($amount, $rate) use ($precision) {
+            $value = $amount / $rate;
+
+            if (!is_null($precision)) {
+                return round($value, $precision);
+            } else {
+                return $value;
+            }
+        });
+    }
+
+    /**
+     * Converts euro to foreign currency
+     * @param string[]|string $currencies
+     * @return float[]|float
+     * @throws ECBException
+     */
+    public function toForeign(float $amount, $currencies, ?int $precision = null)
+    {
+        return $this->convert($amount, $currencies, function ($amount, $rate) use ($precision) {
+            $val = $amount * $rate;
+            return !is_null($precision) ? round($val, $precision) : $val;
+        });
+    }
+
+    /**
      * Reloads ECB exchange references
      *
      * @throws ECBException
@@ -129,19 +144,6 @@ class ECBConverter
     public function reloadExchangeReferences(ECB $ecb): void
     {
         $this->exchange_data = $ecb->getExchangeReferences();
-    }
-
-    /**
-     * Converts euro to foreign currency
-     *
-     * @throws ECBException
-     */
-    public function toForeign(float $amount, string $currency_code, ?int $precision = null)
-    {
-        return $this->convert($amount, $currency_code, function ($amount, $rate) use ($precision) {
-            $val = $amount * $rate;
-            return !is_null($precision) ? round($val, $precision) : $val;
-        });
     }
 
     public function getECB(): ECB

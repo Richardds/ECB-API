@@ -5,17 +5,33 @@ namespace Richardds\ECBAPI;
 class ECB
 {
     /**
-     * URL of daily exchange reference data
+     * Official ECB daily exchange reference URL
      */
-    protected string $exchange_reference_url = 'https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml';
+    public const DEFAULT_ECB_REFERENCE_URL = 'https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml';
 
     /**
+     * URL of daily exchange reference data
+     */
+    protected string $exchange_reference_source;
+
+    /**
+     * @param string $exchange_reference_source URL or file path of the daily exchange reference
+     */
+    public function __construct(string $exchange_reference_source = self::DEFAULT_ECB_REFERENCE_URL)
+    {
+        $this->exchange_reference_source = $exchange_reference_source;
+    }
+
+    /**
+     * cURL wrapper to download remote resource
+     *
+     * @param string $url URL of the resource
+     * @return string resource content
      * @throws ECBException
      */
-    private static function fetch(string $url): string
+    public static function fetch(string $url): string
     {
-        $unique_url = $url . '?' . uniqid('', true);
-        $handle = curl_init($unique_url);
+        $handle = curl_init($url);
         curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
         $data = curl_exec($handle);
 
@@ -38,6 +54,8 @@ class ECB
     }
 
     /**
+     * Retrieve latest exchange reference data
+     *
      * @return Currency[]
      * @throws ECBException
      */
@@ -45,10 +63,10 @@ class ECB
     {
         $exchange_references = [];
 
-        if (preg_match('/^https?:\/\//', $this->exchange_reference_url) === 1) {
-            $raw_xml_data = self::fetch($this->exchange_reference_url);
+        if (preg_match('/^https?:\/\//', $this->exchange_reference_source) === 1) {
+            $raw_xml_data = self::fetch($this->exchange_reference_source);
         } else {
-            $raw_xml_data = file_get_contents($this->exchange_reference_url);
+            $raw_xml_data = file_get_contents($this->exchange_reference_source);
 
             if ($raw_xml_data === false) {
                 throw new ECBException(ECBException::DATA_FETCH_FAILED, 'Failed to get file contents');
@@ -81,13 +99,13 @@ class ECB
         return $exchange_references;
     }
 
-    public function getExchangeReferenceUrl(): string
+    public function getExchangeReferenceSource(): string
     {
-        return $this->exchange_reference_url;
+        return $this->exchange_reference_source;
     }
 
-    public function setExchangeReferenceUrl(string $exchange_reference_url): void
+    public function setExchangeReferenceSource(string $exchange_reference_source): void
     {
-        $this->exchange_reference_url = $exchange_reference_url;
+        $this->exchange_reference_source = $exchange_reference_source;
     }
 }
