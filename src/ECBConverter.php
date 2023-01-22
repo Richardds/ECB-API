@@ -6,7 +6,7 @@ class ECBConverter
 {
     private ECB $ecb;
 
-    private string $cache_file;
+    private ?string $cache_file;
 
     private int $cache_timeout;
 
@@ -20,6 +20,7 @@ class ECBConverter
      * @param ?string $cache_file path to exchange reference cache; disables the cache on null
      * @param int $cache_timeout number of seconds after the cache is renewed
      */
+    public function __construct(ECB $ecb, ?string $cache_file = '.ecb_cache', int $cache_timeout = 3600)
     {
         $this->ecb = $ecb;
         $this->cache_file = $cache_file;
@@ -32,25 +33,17 @@ class ECBConverter
      *
      * @throws ECBException
      */
-    private function checkFileCache(): void
-    {
-        if (!file_exists($this->cache_file) || time() - filemtime($this->cache_file) > $this->cache_timeout) {
-            $this->reloadExchangeReferences($this->ecb);
-            file_put_contents($this->cache_file, serialize($this->exchange_data), LOCK_EX);
-        } else if (empty($this->exchange_data)) {
-            $this->exchange_data = unserialize(file_get_contents($this->cache_file));
-        }
-    }
-
-    /**
-     * @throws ECBException
-     */
     public function check(): void
     {
         if (!empty($this->cache_file)) {
-            $this->checkFileCache();
+            if (!file_exists($this->cache_file) || time() - filemtime($this->cache_file) > $this->cache_timeout) {
+                $this->exchange_data = $this->ecb->getExchangeReferences();
+                file_put_contents($this->cache_file, serialize($this->exchange_data), LOCK_EX);
+            } else if (empty($this->exchange_data)) {
+                $this->exchange_data = unserialize(file_get_contents($this->cache_file));
+            }
         } else if (empty($this->exchange_data)) {
-            $this->reloadExchangeReferences($this->ecb);
+            $this->exchange_data = $this->ecb->getExchangeReferences();
         }
     }
 
@@ -167,12 +160,12 @@ class ECBConverter
         $this->ecb = $ecb;
     }
 
-    public function getCacheFile(): string
+    public function getCacheFile(): ?string
     {
         return $this->cache_file;
     }
 
-    public function setCacheFile(string $cache_file): void
+    public function setCacheFile(?string $cache_file): void
     {
         $this->cache_file = $cache_file;
     }
