@@ -15,7 +15,11 @@ class ECBConverter
      */
     private array $exchange_data = [];
 
-    public function __construct(ECB $ecb, string $cache_file = '.ecb_cache', int $cache_timeout = 3600)
+    /**
+     * @param ECB $ecb
+     * @param ?string $cache_file path to exchange reference cache; disables the cache on null
+     * @param int $cache_timeout number of seconds after the cache is renewed
+     */
     {
         $this->ecb = $ecb;
         $this->cache_file = $cache_file;
@@ -23,6 +27,9 @@ class ECBConverter
     }
 
     /**
+     * Triggers cache timeout check.
+     * The cache is renewed only if the current cache file reached its timeout.
+     *
      * @throws ECBException
      */
     private function checkFileCache(): void
@@ -48,6 +55,8 @@ class ECBConverter
     }
 
     /**
+     * List all currency exchange references.
+     *
      * @return Currency[]|array
      * @throws ECBException
      */
@@ -104,7 +113,8 @@ class ECBConverter
     }
 
     /**
-     * Converts foreign currency to euro
+     * Converts foreign currency amount to euro amount.
+     *
      * @param string[]|string $currencies
      * @return float[]|float
      * @throws ECBException
@@ -123,7 +133,8 @@ class ECBConverter
     }
 
     /**
-     * Converts euro to foreign currency
+     * Converts euro amount to foreign currency amount.
+     *
      * @param string[]|string $currencies
      * @return float[]|float
      * @throws ECBException

@@ -4,18 +4,22 @@ require __DIR__ . '/../vendor/autoload.php';
 
 use Richardds\ECBAPI\ECB;
 use Richardds\ECBAPI\ECBConverter;
+use Richardds\ECBAPI\ECBException;
 
 $ecb = new ECB();
+
 $converter = new ECBConverter($ecb);
 
-$references = [];
-
 try {
-    $references = $converter->list(true);
-} catch (\Richardds\ECBAPI\ECBException $e) {
-    echo $e->getMessage();
-}
+    // Iterate over array or exchange rates
+    foreach ($converter->list(true) as $code => $rate) {
+        printf("1.00 EUR = %.5f %s\n", $rate, $code);
+    }
 
-foreach ($references as $code => $rate) {
-    printf("%s => %.5f\n", $code, $rate);
+    // Iterate over array of \Richardds\ECBAPI\Currency objects
+    foreach ($converter->list() as $currency) {
+        printf("1.00 EUR = %.5f %s\n", $currency->getRate(), $currency->getCode());
+    }
+} catch (ECBException $e) {
+    echo $e->getMessage();
 }

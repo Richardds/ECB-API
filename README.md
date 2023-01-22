@@ -1,6 +1,9 @@
 # ECB-API
 European Central Bank EURO exchange PHP API
 
+- Supports unofficial exchange reference source (remote or local file)
+- Uses local exchange reference cache (can be disabled)
+
 ## Installation with Composer
 ```bash
 composer require richardds/ecb-api
@@ -8,59 +11,85 @@ composer require richardds/ecb-api
 
 ## Examples
 
-### EURO to FOREIGN, FOREIGN to EURO
+### Currency conversion
 
 ```php
-require __DIR__ . '/vendor/autoload.php';
-
+use Richardds\ECBAPI\ECB;
 use Richardds\ECBAPI\ECBConverter;
 
-$converter = new ECBConverter();
+$ecb = new ECB();
 
-echo $converter->toEuro(150, 'USD', 3);
-echo $converter->toForeign(150, 'USD');
-print_r($converter->toForeign(150, ['EUR', 'USD', 'CHF', 'RUB', 'CZK'])) . PHP_EOL;
+$converter = new ECBConverter($ecb);
+
+echo $converter->toEuro(150, 'USD', 1) . PHP_EOL;
+echo $converter->toForeign(150, 'GBP') . PHP_EOL;
+echo $converter->toForeign(150, 'CZK') . PHP_EOL;
+$array = $converter->toEuro(150, ['EUR', 'USD', 'GBP', 'CZK']);
+echo var_export($array, true) . PHP_EOL;
 ```
 ```text
-126.968
-177.21
-Array
-(
-    [EUR] => 150
-    [USD] => 126.96800406298
-    [CHF] => 130.68478829064
-    [RUB] => 2.1159184778929
-    [CZK] => 5.736137667304
+138.6
+131.4
+3588.3
+array (
+  'EUR' => 150.0,
+  'USD' => 138.55532976168485,
+  'GBP' => 171.23287671232876,
+  'CZK' => 6.270378730875345,
 )
 ```
 
 ### Exchange rate list
 
 ```php
-require __DIR__ . '/vendor/autoload.php';
-
+use Richardds\ECBAPI\ECB;
 use Richardds\ECBAPI\ECBConverter;
 
-$converter = new ECBConverter();
+$ecb = new ECB();
 
-$references = $converter->list(true);
+$converter = new ECBConverter($ecb);
 
-foreach ($references as $code => $rate) {
-    if ($code === 'EUR') {
-        continue;
-    }
+// Array or exchange rates
+foreach ($converter->list(true) as $code => $rate) {
+    printf("1.00 EUR = %.5f %s\n", $rate, $code);
+}
 
-    printf("1.00 EUR = %.2f %s\n1.00 %s = %.2f EUR\n", $rate, $code, $code, (1 / $rate));
+// Iterate over array of \Richardds\ECBAPI\Currency objects
+foreach ($converter->list() as $currency) {
+    printf("1.00 EUR = %.5f %s\n", $currency->getRate(), $currency->getCode());
 }
 ```
 ```text
-1.00 EUR = 1.18 USD
-1.00 USD = 0.85 EUR
-1.00 EUR = 130.31 JPY
-1.00 JPY = 0.01 EUR
-1.00 EUR = 1.96 BGN
-1.00 BGN = 0.51 EUR
-1.00 EUR = 26.15 CZK
-1.00 CZK = 0.04 EUR
+1.00 EUR = 1.00000 EUR
+1.00 EUR = 1.08260 USD
+1.00 EUR = 140.86000 JPY
+1.00 EUR = 1.95580 BGN
+1.00 EUR = 23.92200 CZK
 ...
+```
+
+### Disable local cache
+```php
+use Richardds\ECBAPI\ECB;
+use Richardds\ECBAPI\ECBConverter;
+
+$ecb = new ECB();
+// Use different local/remote exchange reference
+$ecb->setExchangeReferenceSource('../storage/local_exchange_reference.xml');
+
+$converter = new ECBConverter($ecb);
+
+echo $converter->...
+```
+
+### Disable local cache
+```php
+use Richardds\ECBAPI\ECB;
+use Richardds\ECBAPI\ECBConverter;
+
+$ecb = new ECB();
+// Disable local exchange reference cache
+$converter = new ECBConverter($ecb, null);
+
+echo $converter->...
 ```
