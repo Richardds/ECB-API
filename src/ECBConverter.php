@@ -109,7 +109,7 @@ class ECBConverter
      * @return float[]|float
      * @throws ECBException
      */
-    public function toEuro(float $amount, string $currencies, ?int $precision = null)
+    public function toEuro(float $amount, $currencies, ?int $precision = null)
     {
         return $this->convert($amount, $currencies, function ($amount, $rate) use ($precision) {
             $value = $amount / $rate;
