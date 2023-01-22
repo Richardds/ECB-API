@@ -10,18 +10,13 @@ class ECBException extends Exception
 {
     public const UNDEFINED = 0;
 
-    /**
-     * @deprecated Use DATA_FETCH_FAILED instead
-     */
-    public const DATA_DOWNLOAD_FAILED = 1;
+    public const DATA_FETCH_FAILED = 1;
 
     public const DATA_PARSE_FAILED = 2;
 
     public const INVALID_DATA = 3;
 
     public const CONVERT_FAILED = 4;
-
-    public const DATA_FETCH_FAILED = 5;
 
     /**
      * ECBException constructor.
@@ -36,7 +31,6 @@ class ECBException extends Exception
         switch ($code) {
             case self::UNDEFINED:
                 break;
-            case self::DATA_DOWNLOAD_FAILED:
             case self::DATA_FETCH_FAILED:
                 $message = 'Failed to fetch exchange reference data';
                 break;
