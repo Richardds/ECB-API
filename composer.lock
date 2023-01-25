@@ -4,8 +4,9 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "fc51b6f22289ffa4ace92d4a449b54bb",
-    "packages": [
+    "content-hash": "b48a975360201a1662d1d277c3b6ada7",
+    "packages": [],
+    "packages-dev": [
         {
             "name": "doctrine/instantiator",
             "version": "1.5.0",
@@ -75,9 +76,7 @@
                 }
             ],
             "time": "2022-12-30T00:15:36+00:00"
-        }
-    ],
-    "packages-dev": [
+        },
         {
             "name": "myclabs/deep-copy",
             "version": "1.11.0",
@@ -1745,7 +1744,7 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": "^7.4|^8.0|^8.1|^8.2",
+        "php": "^7.4 || ^8.0",
         "ext-curl": "*",
         "ext-simplexml": "*"
     },
