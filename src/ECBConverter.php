@@ -75,7 +75,7 @@ class ECBConverter
      * @return float[]|float
      * @throws ECBException
      */
-    public function convert(float $amount, $currencies, callable $callback)
+    private function convert(float $amount, $currencies, callable $callback)
     {
         $this->check();
 
@@ -135,19 +135,14 @@ class ECBConverter
     public function toForeign(float $amount, $currencies, ?int $precision = null)
     {
         return $this->convert($amount, $currencies, function ($amount, $rate) use ($precision) {
-            $val = $amount * $rate;
-            return !is_null($precision) ? round($val, $precision) : $val;
-        });
-    }
+            $value = $amount * $rate;
 
-    /**
-     * Reloads ECB exchange references
-     *
-     * @throws ECBException
-     */
-    public function reloadExchangeReferences(ECB $ecb): void
-    {
-        $this->exchange_data = $ecb->getExchangeReferences();
+            if (!is_null($precision)) {
+                return round($value, $precision);
+            } else {
+                return $value;
+            }
+        });
     }
 
     public function getECB(): ECB
