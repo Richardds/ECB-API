@@ -2,14 +2,10 @@
 
 namespace Richardds\ECBAPI;
 
-/**
- * Class Currency
- * @package Richardds\ECBAPI
- */
 class Currency
 {
     /**
-     * Available ECB currencies
+     * Currencies published by ECB
      */
     public const CURRENCY_NAME_TABLE = [
         'EUR' => 'Euro',
@@ -45,25 +41,14 @@ class Currency
         'ZAR' => 'South African rand'
     ];
 
-    /**
-     * @var string
-     */
-    private $code;
+    private string $code;
 
-    /**
-     * @var float
-     */
-    private $rate;
+    private float $rate;
 
     public function __construct(string $code, float $rate)
     {
         $this->code = $code;
         $this->rate = $rate;
-    }
-
-    public function getName(): string
-    {
-        return self::CURRENCY_NAME_TABLE[$this->code] ?? '';
     }
 
     public function getCode(): string
@@ -79,5 +64,10 @@ class Currency
     public function setRate(float $rate): void
     {
         $this->rate = $rate;
+    }
+
+    public function getName(): ?string
+    {
+        return self::CURRENCY_NAME_TABLE[$this->code] ?? null;
     }
 }
