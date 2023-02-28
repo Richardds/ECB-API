@@ -51,13 +51,13 @@ class ECBConverter
     /**
      * Converts foreign currency to euro.
      *
-     * @param int $amount
+     * @param float $amount
      * @param string|array $currency_code
      * @param int|null $round
      * @return int|array
      * @throws ECBException
      */
-    public function toEuro(int $amount, $currency_code, ?int $round = null)
+    public function toEuro(float $amount, $currency_code, ?int $round = null)
     {
         return $this->convert($amount, $currency_code, function ($amount, $rate) use ($round) {
             $val = $amount / $rate;
@@ -102,7 +102,7 @@ class ECBConverter
     }
 
     /**
-     * @param int $amount
+     * @param float $amount
      * @param string|array $currency_code
      * @param callable $callback
      * @return int|array
@@ -156,7 +156,7 @@ class ECBConverter
     /**
      * Converts euro to foreign currency.
      *
-     * @param int $amount
+     * @param float $amount
      * @param string|array $currency_code
      * @param int|null $precision
      * @return int|array
