@@ -1,6 +1,7 @@
 <?php
 
 namespace Richardds\ECBAPI;
+use Illuminate\Support\Facades\Cache;
 
 /**
  * Class ECB
@@ -14,13 +15,24 @@ class ECB
      * @var string
      */
     protected const EXCHANGE_REFERENCE_URL = 'https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml';
-
+    protected const EXCHANGE_CACHE_HOURS = 1; // may be false to disable caching
+    //another logic my be required for next day (for example if they publish rates at midnight and you set cache for 3 hours your system may be using till 3am old rates) - thats why Im going to use 1 hour.
+   
     /**
      * @return Currency[]
      * @throws ECBException
      */
     public static function getExchangeReferences(): array
     {
+    // Attempt to retrieve the data from cache
+        $cacheKey = 'exchange_references';
+        $cachedReferences = Cache::get($cacheKey);
+
+        if (self::EXCHANGE_REFERENCE_URL && $cachedReferences !== null) {
+            return $cachedReferences;
+        }
+
+    // Fetch data from ECB if not in cache
         $raw_xml_data = self::fetch(self::EXCHANGE_REFERENCE_URL);
 
         if (($xml = simplexml_load_string($raw_xml_data)) !== false) {
@@ -41,6 +53,8 @@ class ECB
 
                 $exchange_references[$code] = new Currency($code, $rate);
             }
+
+            Cache::put($cacheKey, $exchange_references, now()->addHours(self::EXCHANGE_REFERENCE_URL));
 
             return $exchange_references;
         }
